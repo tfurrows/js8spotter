@@ -1,0 +1,52 @@
+JS8Spotter Quick Help
+
+# Main Program
+## Main Window
+
+    * Create and select profiles to organize your search terms
+        - If "Background Scan" is checked, your profile search terms will scan at all times
+        - If "Background Scan" is unchecked, your profile search terms will only scan
+          if/when you are viewing that profile
+
+    * On the left are your custom search terms
+        - Add search terms individually using the entry box, or in bulk using "Import"
+        - Export search terms as needed, to share or backup
+
+    * On the right you will see activity that matches your search terms
+        - Export or clear as needed
+
+    * Double-click entries in the left or right tree to see details of that entry
+
+## Settings
+
+    * The File>Settings menu will allow you to set your callsign and grid,
+      as well as modify TCP settings as needed
+
+
+# Tools Menu
+## Using the Map(s)
+
+    * Set your grid location in the File>Settings menu
+    * Double-click on a callsign to highlight its location on the map
+    * If your map is too crowded, lower the number of stations displayed
+    * Use the <Delete> key to remove stations from the list/map
+    * The map is updated only when loaded from the menu, or when an item is deleted
+
+## Expect Subsystem
+
+    The Expect system looks for custom commands, and sends custom replies.
+
+    * Command Format: Sending station <A> might send the following to station <B>
+        - "<A>: <B> E? <expected command>" for example, "N6CYB: KF7MIX E? TST"
+        - If I have an Expect entry for the command "TST", the reply I have stored would be
+          auto-transmitted
+
+    * Fields:
+        - Expect Text: The text that you station is waiting to see, before sending the reply
+        - Reply Text: What your station will TX after encountering the expected text
+        - Reply-To List: A list of comma separated callsigns or @groups that can trigger a reply
+        - Max Replies: The number of times a reply can be triggered for this expected text
+
+    * Use the <Delete> key to remove entries from the list
+    * Right-click to edit an entry
+    * Double-click to view details of an entry

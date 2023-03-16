@@ -1,0 +1,22 @@
+# JS8Spotter, MIT License, Joe Lyman KF7MIX
+# You should have received a copy of the source and license wit
+
+# Change Log (latest first)
+
+2023-01-22    v0.99b    Cleaned up some bugs in the expect system, and
+                        some Windows-specific bugs in the maps and other areas
+2022-12-19    v0.97b    Added TCP settings and network check
+2022-12-15    v0.96b    Improved grid map. Added Europe; Added ability to
+                        remove items from grid map; Corrected several bugs
+2022-12-09    v0.95b    Added a simple offline maidenhead grid map, and
+                        fixed some button alignment in Linux
+2022-01-25    v0.93a    Fixed race condition in matching, and error handling,
+                        which were both causing the program to hang and not
+                        record matches
+2022-01-20    v0.92a    Switched from UDP to TCP
+2022-01-17    v0.91a    Updated initdb program, fixed theme items
+2022-01-14    v0.90a    Bug fix impacting background search
+2022-01-14    v0.89a    Added external theme, light and dark, bug fixes
+2022-01-13    v0.88a    Added import/export and multi-delete for search terms
+2022-01-12    v0.87a    Some new key bindings, save as dialog in export
+2022-01-11    v0.85a    First public release
