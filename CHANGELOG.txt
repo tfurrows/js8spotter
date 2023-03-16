@@ -3,6 +3,16 @@
 
 # Change Log (latest first)
 
+2023-03-07    v1.04b    Fixed bug in export saveas function
+                        Added missing comments to report output
+                        Added ability to hide RX.SPOT in view menu
+                        Added <return> bindings to some list views
+                        Added right-click copy activity info to clipboard
+                        Added freq,offset,speed to activity database, updated migration script & initdb
+                        Added simulated waterfall for visualization of band activity
+                        Added some auto database cleanup
+                        Added internet gateway for forms reporting, user configurable optional
+                        Improvements in activity detail info
 2023-02-23    v1.03b    Added status bar for incoming expect requests and form responses
                         Improved the appearance of the double-click activity view
                         Added ability to load a previously posted form answers from expect system into forms

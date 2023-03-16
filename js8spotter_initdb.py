@@ -1,4 +1,4 @@
-# JS8Spotter InitDB v1.02b - 2/23/2022
+# JS8Spotter InitDB v1.04b - 03/07/2023
 # Utility to initialize database
 #
 # MIT License, Copyright 2023 Joseph D Lyman KF7MIX
@@ -49,7 +49,10 @@ c.execute("""CREATE TABLE activity (
     dial       TEXT,
     snr        TEXT,
     call       TEXT,
-    spotdate   TIMESTAMP
+    spotdate   TIMESTAMP,
+    freq       TEXT,
+    offset     TEXT,
+    speed      TEXT
 )
 """)
 
@@ -91,7 +94,20 @@ c.execute("""CREATE TABLE "forms" (
 	"msgtxt"	TEXT,
 	"timesig"	TEXT,
 	"lm"	TIMESTAMP,
+    "gwtx"      TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
+)
+""")
+
+c.execute("""CREATE TABLE signal (
+    "id"     INTEGER PRIMARY KEY AUTOINCREMENT,
+    "sig_callsign" VARCHAR (64),
+    "sig_dial"     TEXT,
+    "sig_freq"     TEXT,
+    "sig_offset"   TEXT,
+    "sig_speed"    TEXT,
+    "sig_snr"      TEXT,
+    "sig_timestamp" TIMESTAMP
 )
 """)
 
@@ -99,7 +115,7 @@ conn.commit()
 
 new_val = "Default"
 c.execute("INSERT INTO profile(title, def) VALUES ('Default', 1)")
-c.execute("INSERT INTO setting (name, value) VALUES ('udp_ip','127.0.0.1'),('udp_port','2242'),('tcp_ip','127.0.0.1'),('tcp_port','2442'),('hide_heartbeat',0),('dark_theme',0)")
+c.execute("INSERT INTO setting (name, value) VALUES ('udp_ip','127.0.0.1'),('udp_port','2242'),('tcp_ip','127.0.0.1'),('tcp_port','2442'),('hide_heartbeat','0'),('dark_theme','0'),('marker_index','0'),('wfband_index','0'),('wftime_index','0'),('callsign','FILL'),('grid','FILL'),('hide_spot','0')")
 
 conn.commit()
 conn.close()

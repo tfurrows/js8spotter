@@ -157,9 +157,16 @@ are still retained in the database, they are simply hidden on the screen when
 this option is selected. This option is not profile specific. This setting is
 retained when the program is closed.
 
-## Map Window
+## Simple Offline Map Window
 
 Provides a simple offline maidenhead grid map of the latest 100 contacts.
+
+## Visualize Waterfall Window
+
+This window lets you visualize waterfall activity on a simulated waterfall.
+Activity is gathered as you RX on a band. When you view the visual, you'll be
+able to quickly get a feel for the parts of the band that are more or less
+busy.
 
 ## Expect Window
 
@@ -199,7 +206,12 @@ they will be using on the air, so that those formats may be publicly available.
 For more form format details, view the included forms in the forms folder.
 
 Filled out forms are posted to the Expect system. When collected over the air,
-received form responses will be in the tools menu for viewing.
+received form responses will be in the tools menu under form responses for
+easy viewing.
+
+The form responses window has a gateway option. If a URL is entered, your system
+will automatically forward received forms to your gateway. A test gateway is
+available at kf7mix.com, or program your own gateway to receive forms data.
 
 ## APRS Commands
 

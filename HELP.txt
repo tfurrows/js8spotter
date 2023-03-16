@@ -23,7 +23,7 @@ JS8Spotter Quick Help
       as well as modify TCP settings as needed
 
 # Tools Menu
-## Using the Map(s)
+## Using the Simple Offline Map(s)
 
     * Set your grid location in the File>Settings menu
     * Double-click on a callsign to highlight its location on the map
@@ -31,6 +31,12 @@ JS8Spotter Quick Help
     * Use the <Delete> key to remove stations from the list/map, or select and right-click
     * The map is updated only when loaded from the menu, or when an item is deleted
     * Locations are approximate
+
+## Visualize Waterfall
+
+    View a visualization of the waterfall for a given band over a given period of time.
+    This helps you determine which part of the waterfall might be most useful for you.
+    You station will gather data for the band(s) you use, and display on demand.
 
 ## Expect Subsystem
 

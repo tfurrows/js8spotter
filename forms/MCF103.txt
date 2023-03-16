@@ -1,0 +1,33 @@
+Net Checkin|F!103
+
+# Form updated 03/07/2023. This is a default JS8Spotter MCForms form. See kf7mix.com for details.
+
+? Do you have any traffic?
+@Y Yes
+@N No
+
+? What is your status?
+@1 All operations normal
+@5 Situation report, retrieve form F!301 for details
+
+? What is the current forecast weather for today at your QTH?
+@1 Sunny
+@2 Partly Cloudy
+@3 Cloudy
+@4 Light Rain
+@5 Moderate Rain
+@6 Heavy Rain
+@7 Snow
+@8 Sleet or Ice
+@9 Thunderstorms
+@A Severe weather expected
+
+? Current expected high temperature range?
+@1 Below 0F
+@2 0F - 32F
+@3 32F - 55F
+@4 55F - 75F
+@5 75F - 85F
+@6 85F - 95F
+@7 Above 95F
+
