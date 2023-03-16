@@ -1,5 +1,7 @@
 Amateur Station & Equipment Details|F!101
 
+# Form updated 02/24/2023. This is a default JS8Spotter MCForms form. See kf7mix.com for details.
+
 ? Station max RF power capability:
 @1 QRP 0-5W
 @2 5-10W

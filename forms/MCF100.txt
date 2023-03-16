@@ -1,5 +1,7 @@
 Amateur Operator Information|F!100
 
+# Form updated 02/24/2023. This is a default JS8Spotter MCForms form. See kf7mix.com for details.
+
 ? GMT Offset:
 @1 -12:00
 @2 -11:00

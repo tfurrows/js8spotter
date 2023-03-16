@@ -1,8 +1,15 @@
 # JS8Spotter, MIT License, Joe Lyman KF7MIX
-# You should have received a copy of the source and license wit
+# You should have received a copy of the source and license with this application
 
 # Change Log (latest first)
 
+2023-02-23    v1.03b    Added status bar for incoming expect requests and form responses
+                        Improved the appearance of the double-click activity view
+                        Added ability to load a previously posted form answers from expect system into forms
+                        Added missing "Export All" in form responses
+                        Added copy/export buttons and right-click copy popup to form response pages
+                        Added notes & date to form files
+                        Fixed bug in short datecode generator
 2023-02-14    v1.02b    Fixed scrollbar display issues
                         Fixed row coloring issues
                         Fixed bug when search string was a number

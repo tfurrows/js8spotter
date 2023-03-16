@@ -22,23 +22,23 @@ JS8Spotter Quick Help
     * The File>Settings menu will allow you to set your callsign and grid,
       as well as modify TCP settings as needed
 
-
 # Tools Menu
 ## Using the Map(s)
 
     * Set your grid location in the File>Settings menu
     * Double-click on a callsign to highlight its location on the map
     * If your map is too crowded, lower the number of stations displayed
-    * Use the <Delete> key to remove stations from the list/map
+    * Use the <Delete> key to remove stations from the list/map, or select and right-click
     * The map is updated only when loaded from the menu, or when an item is deleted
+    * Locations are approximate
 
 ## Expect Subsystem
 
     The Expect system looks for custom commands, and sends custom replies.
 
     * Command Format: Sending station <A> might send the following to station <B>
-        - "<A>: <B> E? <expected command>" for example, "N6CYB: KF7MIX E? TST"
-        - If I have an Expect entry for the command "TST", the reply I have stored would be
+        - "<A>: <B> E? <expected command>" for example, "N6CYB: KF7MIX E? CMDS"
+        - If I have an Expect entry for the command "CMDS", the reply I have stored would be
           auto-transmitted
 
     * Fields:
@@ -50,12 +50,14 @@ JS8Spotter Quick Help
     * Use the <Delete> key to remove entries from the list
     * Right-click to edit an entry
     * Double-click to view details of an entry
+    * The Send Now button will let you TX an expect entry manually
+    * MCForms filled-out forms are posted as expect entries
 
 ## MCForms Subsystem
 
-    The MCForms system adds basic forms functionality to JS8Call. Please
-    see the forms/ folder and associated text files, along with the README.txt
-    file included with this program.
+    The MCForms system adds basic multiple choice forms functionality to JS8Call. Please
+    see the forms/ folder and associated text files, along with the README.txt file included
+    with this program for details and information.
 
 ## APRS Commands
 

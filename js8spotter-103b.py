@@ -1,4 +1,4 @@
-# JS8Spotter v1.02b. Special thanks to KE0DHO, KF0HHR, N0GES, N6CYB, KQ4DRG, and N4FWD for help with development and testing.
+# JS8Spotter v1.03b. Special thanks to KE0DHO, KF0HHR, N0GES, N6CYB, KQ4DRG, and N4FWD for help with development and testing.
 # Tracks band activity, expands auto-reply, adds offline map and APRS functions. See documentation or visit https://kf7mix.com/js8spotter.html
 #
 # MIT License, Copyright 2023 Joseph D Lyman KF7MIX -- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -32,7 +32,7 @@ import os
 ### Globals
 swname = "JS8Spotter"
 fromtext = "de KF7MIX"
-swversion = "1.02b"
+swversion = "1.03b"
 
 dbfile = 'js8spotter.db'
 conn = sqlite3.connect(dbfile)
@@ -43,8 +43,9 @@ search_strings = []
 bgsearch_strings = {}
 expects = {}
 forms = {}
+totals = {}
 
-map_loc = 0 # For maps, 0=North America, 1=Europe
+map_loc = 0 # for maps, 0=North America, 1=Europe
 maplocs = ["North America", "Europe"]
 gridmultiplier = [
     {
@@ -66,7 +67,7 @@ markeropts = ["Latest 100", "Latest 50", "Latest 25", "Latest 10"]
 c.execute("SELECT * FROM setting")
 dbsettings = c.fetchall()
 
-# Build any missing default settings
+## Build any missing default settings
 if len(dbsettings)<9:
     c.execute("INSERT INTO setting(name,value) VALUES ('udp_ip','127.0.0.1'),('udp_port','2242'),('tcp_ip','127.0.0.1'),('tcp_port','2442'),('hide_heartbeat','0'),('dark_theme','0'),('marker_index','0'),('callsign','FILL'),('grid','FILL')")
     conn.commit()
@@ -74,14 +75,19 @@ if len(dbsettings)<9:
     dbsettings.clear()
     dbsettings = c.fetchall()
 
-# setup settings dictionary
+## Setup settings dictionary
 settings = {}
 for setting in dbsettings:
     settings[setting[1]]=setting[2]
 
-### Thread for processing output of JS8Call over socket
+## Setup statusbar totals tracking
+totals[0]=0 # for grid, not currently reported in statusbar
+totals[1]=0 # for expect
+totals[2]=0 # for forms
+
 event = Event() # for inter-thread comms
 
+### Thread for processing output of JS8Call over socket
 class TCP_RX(Thread):
     def __init__(self, sock):
         super().__init__()
@@ -92,7 +98,7 @@ class TCP_RX(Thread):
         self.keep_running = False
 
     def run(self):
-        conn1 = sqlite3.connect(dbfile) # we need our own connection in this thread
+        conn1 = sqlite3.connect(dbfile) # we need our own db connection in this thread
         c1 = conn1.cursor()
 
         track_types = {"RX.ACTIVITY", "RX.DIRECTED", "RX.SPOT"}
@@ -116,7 +122,7 @@ class TCP_RX(Thread):
                             data_json = {'type':'error'}
 
                         if data_json['type'] in track_types:
-                            # Gather basic elements of this record
+                            # gather basic elements of this record
                             msg_call = ""
                             msg_dial = ""
                             msg_snr = ""
@@ -126,28 +132,31 @@ class TCP_RX(Thread):
                             if "SNR" in data_json['params']: msg_snr = data_json['params']['SNR']
                             msg_value = data_json['value']
 
-                            # Before scans, save grid info (from CQ, spot, hb, msg)
+                            # before scans, save grid info (from CQ, spot, hb, msg)
                             msg_grid = ""
                             if "GRID" in data_json['params']: msg_grid = data_json['params']['GRID'].strip()
                             if msg_grid != "":
                                 gridsql = "INSERT INTO grid(grid_callsign,grid_grid,grid_dial,grid_type,grid_snr,grid_timestamp) VALUES (?,?,?,?,?, CURRENT_TIMESTAMP)"
                                 c1.execute(gridsql, [msg_call, msg_grid, msg_dial, data_json['type'], msg_snr])
                                 conn1.commit()
+                                event.set()
 
                             ## Multiple Choice Forms (MCF) subsystem. Check for prefix "F!<three digits> <form response> <msg> <datecode>" in any incoming data
                             scan_forms = re.search("([A-Z0-9]+):\s+?(@?[A-Z0-9]+)\s+?(.*\s+)?(F\![A-Z0-9]{3})\s+?([A-Z0-9]+)\s+?(.*?)(\#[A-Z0-9]+)",msg_value) # from, to, <optional E? or MSG etc. group not used>, form ID, form responses, msg, timestamp
                             if scan_forms:
-                                # Found a form in the stream, save it. No need for it to be directed to us, we want to save all forms we find.
+                                # found a form in the stream, save it. No need for it to be directed to us, we want to save all forms we find.
                                 sql = "INSERT INTO forms(fromcall,tocall,typeid,responses,msgtxt,timesig,lm) VALUES (?,?,?,?,?,?, CURRENT_TIMESTAMP)"
                                 c1.execute(sql, [scan_forms[1],scan_forms[2],scan_forms[4],scan_forms[5],scan_forms[6],scan_forms[7]])
                                 conn1.commit()
+                                event.set()
 
                             scan_formsrelay = re.search("([A-Z0-9]+):\s+?(@?[A-Z0-9>]+)\s+?(.*\s+)?(F\![A-Z0-9]{3})\s+?([A-Z0-9]+)\s+?(.*?)(\#[A-Z0-9]+)\s+?\*DE\*\s+?([A-Z0-9]+)",msg_value)
                             if scan_formsrelay:
-                                # Found a relayed form, save it. Doesn't matter who it is to/from, we want to save all forms we find.
+                                # found a relayed form, save it. Doesn't matter who it is to/from, we want to save all forms we find.
                                 sql = "INSERT INTO forms(fromcall,tocall,typeid,responses,msgtxt,timesig,lm) VALUES (?,?,?,?,?,?, CURRENT_TIMESTAMP)"
                                 c1.execute(sql, [scan_formsrelay[8],scan_formsrelay[2],scan_formsrelay[4],scan_formsrelay[5],scan_formsrelay[6],scan_formsrelay[7]])
                                 conn1.commit()
+                                event.set()
 
                             ## Expect subsystem. Check for expect prefix "<from>: <to> E? <expect>" and process. Relayed form "<relay>: <to>> E? <expect> *DE* <from>"
                             reply_to = ""
@@ -155,14 +164,14 @@ class TCP_RX(Thread):
                             ex_expect = ""
                             ex_relay = ""
 
-                            # Scan for direct request expect
+                            # scan for direct request expect
                             scan_expect = re.search("([A-Z0-9]+):\s+?(@?[A-Z0-9]+)\s+?E\?\s+?([A-Z0-9!]+)",msg_value) # from, to, expect
                             if scan_expect:
                                 ex_from = scan_expect.group(1)
                                 ex_to = scan_expect.group(2)
                                 ex_expect = scan_expect.group(3)
                             else:
-                                # Scan for relayed request expect
+                                # scan for relayed request expect
                                 scan_expect = re.search("([A-Z0-9]+):\s+?([A-Z0-9]+)\>?\s+?E\?\s+?([A-Z0-9!]+)\s+?\*DE\*?\s+?([A-Z0-9]+)?",msg_value) # relay, to, expect, from
                                 if scan_expect:
                                     ex_relay = scan_expect.group(1)
@@ -171,11 +180,11 @@ class TCP_RX(Thread):
                                     ex_from = scan_expect.group(4)
 
                             if ex_expect:
-                                # Check if expect is in database
+                                # check if expect is in database
                                 c1.execute("SELECT * FROM expect WHERE expect = ?", [ex_expect])
                                 ex_exists = c1.fetchone()
                                 if ex_exists:
-                                    # Found expect command. Check if requestor is in allowed list, or * for any station
+                                    # found expect command. Check if requestor is in allowed list, or * for any station
                                     for allow in ex_exists[2].split(","):
                                         if allow[0]=="@":
                                             if ex_to == allow: reply_to = ex_to
@@ -184,10 +193,10 @@ class TCP_RX(Thread):
                                     for allowall in ex_exists[2].split(","):
                                         if allowall=="*" and ex_to==settings['callsign'] and reply_to=="": reply_to = ex_from
                                     if reply_to:
-                                        # Make sure that txmax hasn't been exceeded
+                                        # make sure that txmax hasn't been exceeded
                                         reply_count=len(ex_exists[3].split(","))-1
                                         if reply_count<int(ex_exists[4]):
-                                            # Formulate reply, relay or regular
+                                            # formulate reply, relay or regular
                                             if ex_relay:
                                                 ex_reply = settings['callsign']+": "+ex_relay+"> "+reply_to+" "+ex_exists[1]
                                                 time.sleep(120) # ugly last-ditch workaround relay ACK delays
@@ -198,17 +207,18 @@ class TCP_RX(Thread):
                                             self.sock.send(bytes(tx_content + '\n','utf-8'))
                                             time.sleep(0.25)
 
-                                            # Append database txlist
+                                            # append database txlist
                                             if ex_exists[3] == "":
                                                 sql = "UPDATE expect SET txlist = '"+reply_to+",' WHERE expect = ?"
                                             else:
                                                 sql = "UPDATE expect SET txlist = txlist || '"+reply_to+" "+datetime.datetime.now().strftime("%x %X")+",' WHERE expect = ?"
                                             c1.execute(sql,[ex_expect])
                                             conn1.commit()
+                                            event.set()
 
                             ## Scan for search terms
                             msg_value=""
-                            # If search term is in 'value' or 'call' then insert into db. Check visible profile terms, make copy in case other thread modifies dict
+                            # if search term is in 'value' or 'call' then insert into db. Check visible profile terms, make copy in case other thread modifies dict
                             searchcheck = search_strings.copy()
                             for term in searchcheck:
                                 if (term in msg_call) or (term in data_json['value']):
@@ -219,7 +229,7 @@ class TCP_RX(Thread):
                                     conn1.commit()
                                     event.set()
 
-                            # Check background scan profile terms. Make copy in case other thread modifies dict
+                            # check background scan profile terms. Make copy in case other thread modifies dict
                             bgcheck = bgsearch_strings.copy();
                             for term in bgcheck.keys():
                                 term_profile = bgcheck.get(term)
@@ -267,8 +277,8 @@ class App(tk.Tk):
     ## Setup main gui window
     def create_gui(self):
         self.title(swname+" "+fromtext+" (v"+swversion+")")
-        self.geometry('900x400')
-        self.minsize(900,400)
+        self.geometry('900x450')
+        self.minsize(900,450)
         self.resizable(width=True, height=True)
 
         self.columnconfigure(0, weight=12)
@@ -280,6 +290,7 @@ class App(tk.Tk):
         self.rowconfigure(1,weight=1)
         self.rowconfigure(2,weight=24)
         self.rowconfigure(3,weight=1)
+        self.rowconfigure(4,weight=1)
 
         # menus
         self.menubar = Menu(self)
@@ -322,7 +333,7 @@ class App(tk.Tk):
         self.menubar.add_cascade(label = 'Help', menu = self.helpmenu)
         self.config(menu = self.menubar)
 
-        # Profile title and select
+        # profile title and select
         self.prframe = ttk.Frame(self)
         self.prframe.grid(row=0, column=0, columnspan=2, sticky=NSEW, padx=10, pady=(0,5))
 
@@ -402,6 +413,10 @@ class App(tk.Tk):
         self.clearact_button = ttk.Button(self.acframe, text = 'Clear Log', command = self.proc_dellog)
         self.clearact_button.grid(row=0, column=3, sticky='NE', padx=0, pady=0)
 
+        # status bar
+        self.statusbar = ttk.Label(self, text="Status: Waiting for TCP data... ", relief=tk.SUNKEN, anchor=tk.W)
+        self.statusbar.grid(row=4,column=0,columnspan=4, sticky='EW', padx=0, pady=(10,0))
+
     def toggle_theme(self):
         global settings
         if settings['dark_theme'] == "1":
@@ -466,7 +481,7 @@ class App(tk.Tk):
         self.save_button = ttk.Button(tlframe, text = 'Add Batch', command = self.proc_addbatch)
         self.save_button.pack(side=LEFT, padx=(0,10))
 
-        # Text window
+        # text window
         self.batch = Text(self.top, wrap=NONE)
         batch_scrollbar = ttk.Scrollbar(self.top, orient=tk.VERTICAL, command=self.batch.yview)
         self.batch.configure(yscroll=batch_scrollbar.set)
@@ -510,7 +525,7 @@ class App(tk.Tk):
         self.saveas_button = ttk.Button(tlframe, text = 'Save As', command = self.export_saveas_popup)
         self.saveas_button.pack(side=RIGHT)
 
-        # Text window
+        # text export window
         self.export_text = Text(self.top, wrap=NONE)
         export_scrollbar = ttk.Scrollbar(self.top, orient=tk.VERTICAL, command=self.export_text.yview)
         self.export_text.configure(yscroll=export_scrollbar.set)
@@ -834,7 +849,7 @@ class App(tk.Tk):
         self.saveas_button = ttk.Button(tlframe, text = 'Save As', command = self.export_saveas_popup)
         self.saveas_button.pack(side=RIGHT)
 
-        # Text window
+        # text window
         self.export_text = Text(self.top, wrap=NONE)
         export_scrollbar = ttk.Scrollbar(self.top, orient=tk.VERTICAL, command=self.export_text.yview)
         self.export_text.configure(yscroll=export_scrollbar.set)
@@ -859,7 +874,7 @@ class App(tk.Tk):
         self.top.bind('<Escape>', lambda x: self.top.destroy())
 
     def export_saveas_popup(self):
-        fname = fd.asksaveasfilename(defaultextension=".txt")
+        fname = fd.asksaveasfilename(defaultextension=".txt", parent=self)
         if fname is None or fname == '': return
         saveas_text = str(self.export_text.get('1.0', 'end'))
         with open(fname,mode='w',encoding='utf-8') as f:
@@ -870,7 +885,6 @@ class App(tk.Tk):
         self.clipboard_clear()
         text = self.export_text.get('1.0', 'end')
         self.clipboard_append(text)
-        self.copy_button.configure(text="Copied")
 
     ## Export right-click copy action
     def export_copy_popup(self, ev):
@@ -902,7 +916,14 @@ class App(tk.Tk):
         aciid = int(self.activity.focus())
         c.execute("SELECT * FROM activity WHERE id = ?",[aciid])
         activity = c.fetchone()
-        messagebox.showinfo("Activity Detail",activity)
+        actmsg="Message Details:\n\n"
+        actmsg+="Call:   "+activity[6]+"\n"
+        actmsg+="Dial:   "+activity[4]+"\n"
+        actmsg+="Date:   "+activity[7]+"\n"
+        actmsg+="\nText:   "+activity[3]+"\n\n"
+        actmsg+="SNR:    "+activity[5]+"dB\n"
+        actmsg+="Type:   "+activity[2]+"\n"
+        messagebox.showinfo("Activity Detail",actmsg)
 
     ## View activity details by type, from search term detail window
     def view_activity_type(self, rxtype):
@@ -914,7 +935,14 @@ class App(tk.Tk):
         if aciid>0:
             c.execute("SELECT * FROM activity WHERE id = ?",[aciid])
             activity = c.fetchone()
-            messagebox.showinfo("Activity Detail",activity, parent=self.top)
+            actmsg="Message Details:\n\n"
+            actmsg+="Call:   "+activity[6]+"\n"
+            actmsg+="Dial:   "+activity[4]+"\n"
+            actmsg+="Date:   "+activity[7]+"\n"
+            actmsg+="\nText:   "+activity[3]+"\n\n"
+            actmsg+="SNR:    "+activity[5]+"dB\n"
+            actmsg+="Type:   "+activity[2]+"\n"
+            messagebox.showinfo("Activity Detail",actmsg, parent=self.top)
 
     ## View search term detail window, divided by type
     def view_keyword_activity(self, ev):
@@ -1049,7 +1077,11 @@ class App(tk.Tk):
 
     ## Display a maidenhead grid map with SPOT locations
     def grid_map(self):
-        global map_loc
+        global map_loc, totals
+
+        totals[0]=0
+        self.update_statusbar()
+
         self.top = Toplevel(self)
         self.top.title("Grid Location Map")
         self.top.geometry('1120x465')
@@ -1071,6 +1103,7 @@ class App(tk.Tk):
         self.top.gridcall.bind('<Return>', self.highlight_grid)
         self.top.gridcall.bind('<Double-1>', self.highlight_grid)
         self.top.gridcall.bind('<Delete>', self.delete_grid)
+        self.top.gridcall.bind('<Button-3>', self.delete_grid)
         self.top.gridcall.grid(row=0, column=1, sticky=NSEW, padx=(10,0), pady=(10,10))
 
         self.top.gcscrollbar = ttk.Scrollbar(self.top, orient=tk.VERTICAL, command=self.top.gridcall.yview)
@@ -1266,6 +1299,11 @@ class App(tk.Tk):
 
     ## Expect subsystem main window
     def expect(self):
+        global totals
+
+        totals[1]=0
+        self.update_statusbar()
+
         self.top = Toplevel(self)
         self.top.title("Expect Auto-Reply Subsystem")
         self.top.geometry('1120x465')
@@ -1410,7 +1448,7 @@ class App(tk.Tk):
         new_allowed = self.entry_allowed.get().upper()
         new_txmax = self.entry_txmax.get().upper()
 
-        # Validate input
+        # validate input
         if new_expect == "" or new_reply == "" or new_allowed == "" or new_txmax == "" : return
 
         if new_txmax.isnumeric() == False:
@@ -1421,14 +1459,14 @@ class App(tk.Tk):
             messagebox.showinfo("Error","Max Replies must be between 1 and 99", parent=self.top)
             return
 
-        # Preserve txlist if it exists already
+        # preserve txlist if it exists already
         c.execute("SELECT * FROM expect WHERE expect = ?", [new_expect[0:6]])
         record = c.fetchone()
         old_txlist = ""
         if record:
             old_txlist = record[3]
 
-        # Checks passed, save and update
+        # checks passed, save and update
         sql = "INSERT INTO expect(expect,reply,allowed,txmax,txlist,lm) VALUES (?,?,?,?,?, CURRENT_TIMESTAMP)"
         c.execute(sql, [new_expect[0:6],new_reply,new_allowed,new_txmax,old_txlist])
         conn.commit()
@@ -1537,6 +1575,11 @@ class App(tk.Tk):
 
     ## MCForms subsystem form responses view
     def form_responses(self):
+        global totals
+
+        totals[2]=0
+        self.update_statusbar()
+
         self.top = Toplevel(self)
         self.top.title("MCForms - Form Responses")
         self.top.geometry('1000x465')
@@ -1550,7 +1593,7 @@ class App(tk.Tk):
         self.top.rowconfigure(1,weight=24)
         self.top.rowconfigure(2,weight=1)
 
-        # Form type select, date range select, & title
+        # form type select, date range select, & title
         self.ftframe = ttk.Frame(self.top)
         self.ftframe.grid(row=0, column=0, columnspan=2, sticky=NSEW, padx=10, pady=(0,5))
 
@@ -1563,7 +1606,7 @@ class App(tk.Tk):
         self.drcombo.grid(row=0, column =2 , sticky='E', padx=8, pady=(8,0))
         self.drcombo.bind('<<ComboboxSelected>>', self.formtype_selcombo)
 
-        # Form response treeview
+        # form response treeview
         self.formresp = ttk.Treeview(self.top, show='headings', selectmode="browse")
         self.formresp["columns"]=("fromcall","tocall","typeid","response","msgtxt","timesig","lm")
 
@@ -1590,11 +1633,11 @@ class App(tk.Tk):
         self.formresp.configure(yscroll=self.frscrollbar.set)
         self.frscrollbar.grid(row=1, column=1, sticky=NS, padx=(0,10), pady=(10,10))
 
-        # Frame with action buttons
+        # frame with action buttons
         self.frframe = ttk.Frame(self.top)
         self.frframe.grid(row=2, column=0, sticky='NSEW')
 
-        self.frexport = ttk.Button(self.frframe, text = 'Export All', command = self.update_formtypecombo, width='8')
+        self.frexport = ttk.Button(self.frframe, text = 'Export All', command = self.export_formresps, width='12')
         self.frexport.grid(row=0, column=0, sticky='NE', padx=(8,8),pady=(8,8))
 
         self.update_formtypecombo()
@@ -1608,13 +1651,13 @@ class App(tk.Tk):
 
     ## Update form responses treeview
     def update_formresponses(self):
-        # Limit to selected form type
+        # limit to selected form type
         typeid_selection = self.ftcombo.get().split(",")[0]
         wheres = ""
         if typeid_selection!="" and typeid_selection!="View All Form Types":
             wheres = " WHERE typeid = '"+typeid_selection+"' "
 
-        # Limit to selected date range
+        # limit to selected date range
         range_selection = self.drcombo.get()
         if range_selection:
             if range_selection!="All Time":
@@ -1627,7 +1670,7 @@ class App(tk.Tk):
                 if range_selection=="Last Month": wheres+="lm > DATETIME('now', '-31 day')"
                 if range_selection=="Last Year": wheres+="lm > DATETIME('now', '-365 day')"
 
-        # Clear out the tree
+        # clear out the tree
         for entry in self.formresp.get_children():
             self.formresp.delete(entry)
 
@@ -1655,10 +1698,10 @@ class App(tk.Tk):
         global forms
         self.form_refresh()
 
-        # Clear combobox
+        # clear combobox
         self.ftcombo.delete(0, tk.END)
 
-        # Rebuild from database
+        # rebuild from database
         c.execute("SELECT id,typeid FROM forms ORDER BY typeid ASC")
         ftype_records = c.fetchall()
         ftcomboopts = []
@@ -1699,15 +1742,29 @@ class App(tk.Tk):
             self.top2.geometry('650x500')
 
             # display window
-            self.fr_text = Text(self.top2, wrap=NONE, font='TkFixedFont')
-            fr_scrollbar = ttk.Scrollbar(self.top2, orient=tk.VERTICAL, command=self.fr_text.yview)
-            self.fr_text.configure(yscroll=fr_scrollbar.set)
+            self.export_text = Text(self.top2, wrap=NONE, font='TkFixedFont')
+            fr_scrollbar = ttk.Scrollbar(self.top2, orient=tk.VERTICAL, command=self.export_text.yview)
+            self.export_text.configure(yscroll=fr_scrollbar.set)
             fr_scrollbar.pack(side=RIGHT, fill='y', padx=(0,10), pady=(10,10))
-            self.fr_text.pack(side=LEFT, expand=True, fill='both', padx=(10,0), pady=(10,10))
+
+            # save and copy buttons
+            tlframe = ttk.Frame(self.top2)
+            tlframe.pack(side=BOTTOM, anchor=SW, padx=10, pady=(0,10))
+            self.top2.copy_button = ttk.Button(tlframe, text = 'Copy All', command = self.export_copy_all)
+            self.top2.copy_button.pack(side=LEFT, padx=(0,10))
+            self.top2.saveas_button = ttk.Button(tlframe, text = 'Save As', command = self.export_saveas_popup)
+            self.top2.saveas_button.pack(side=RIGHT)
+
+            self.export_text.pack(side=LEFT, expand=True, fill='both', padx=(10,0), pady=(10,10))
+
+            # right-click action
+            self.rcmenu = Menu(self.top2, tearoff = 0)
+            self.rcmenu.add_command(label = 'Copy')
+            self.export_text.bind('<Button-3>', lambda ev: self.export_copy_popup(ev))
 
             fr_contents = "Form:         "+formresp_db[3]+"\nFROM Station: "+formresp_db[1]+"\nTO Station:   "+formresp_db[2]+"\nFiled:        "+dcst+"\nReceived:     "+formresp_db[7]+"\n========================\n\n"
 
-            # Loop through form responses to build form report
+            # loop through form responses to build form report
             qnum=0
             for resp in formresp_db[4]:
                 qnum+=1
@@ -1716,14 +1773,13 @@ class App(tk.Tk):
                 if qans:
                     fr_contents += str(qans[0])+"\n"
 
-            self.fr_text.insert(tk.END, fr_contents)
+            self.export_text.insert(tk.END, fr_contents)
 
-            self.fr_text.configure(state='disabled')
+            self.export_text.configure(state='disabled')
             self.top2.focus()
             self.top2.wait_visibility()
             self.top2.grab_set()
             self.top2.bind('<Escape>', lambda x: self.top2.destroy())
-
 
     ## Remove saved form response(s) from database/tree
     def delete_formresp(self,ev):
@@ -1740,6 +1796,72 @@ class App(tk.Tk):
                 c.execute("DELETE FROM forms WHERE id = ?", [friid])
             conn.commit()
             self.update_formresponses()
+
+    def export_formresps(self):
+        # limit to selected form type
+        typeid_selection = self.ftcombo.get().split(",")[0]
+        wheres = ""
+        if typeid_selection!="" and typeid_selection!="View All Form Types":
+            wheres = " WHERE typeid = '"+typeid_selection+"' "
+
+        # limit to selected date range
+        range_selection = self.drcombo.get()
+        if range_selection:
+            if range_selection!="All Time":
+                if wheres=="":
+                    wheres = " WHERE "
+                else:
+                    wheres += " AND "
+                if range_selection=="Last 24hrs": wheres+="lm > DATETIME('now', '-24 hour')"
+                if range_selection=="Last Week": wheres+="lm > DATETIME('now', '-7 day')"
+                if range_selection=="Last Month": wheres+="lm > DATETIME('now', '-31 day')"
+                if range_selection=="Last Year": wheres+="lm > DATETIME('now', '-365 day')"
+
+        c.execute("SELECT * FROM forms "+wheres+" ORDER BY lm DESC")
+        formresp_lines = c.fetchall()
+
+        if formresp_lines:
+            self.top2 = Toplevel(self)
+            self.top2.title("Form Responses Export")
+            self.top2.geometry('650x500')
+
+            # display window
+            self.export_text = Text(self.top2, wrap=NONE, font='TkFixedFont')
+            fr_scrollbar = ttk.Scrollbar(self.top2, orient=tk.VERTICAL, command=self.export_text.yview)
+            self.export_text.configure(yscroll=fr_scrollbar.set)
+            fr_scrollbar.pack(side=RIGHT, fill='y', padx=(0,10), pady=(10,10))
+
+            # save and copy buttons
+            tlframe = ttk.Frame(self.top2)
+            tlframe.pack(side=BOTTOM, anchor=SW, padx=10, pady=(0,10))
+            self.top2.copy_button = ttk.Button(tlframe, text = 'Copy All', command = self.export_copy_all)
+            self.top2.copy_button.pack(side=LEFT, padx=(0,10))
+            self.top2.saveas_button = ttk.Button(tlframe, text = 'Save As', command = self.export_saveas_popup)
+            self.top2.saveas_button.pack(side=RIGHT)
+
+            self.export_text.pack(side=LEFT, expand=True, fill='both', padx=(10,0), pady=(10,10))
+
+            # right-click action
+            self.rcmenu = Menu(self.top2, tearoff = 0)
+            self.rcmenu.add_command(label = 'Copy')
+            self.export_text.bind('<Button-3>', lambda ev: self.export_copy_popup(ev))
+
+            # loop through form responses to build export
+            export_contents = ""
+            for record in formresp_lines:
+                for i in record:
+                    export_contents+=str(i)+chr(9)
+                export_contents+="\n"
+
+            self.export_text.insert(tk.END, export_contents)
+
+            self.export_text.configure(state='disabled')
+            self.top2.focus()
+            self.top2.wait_visibility()
+            self.top2.grab_set()
+            self.top2.bind('<Escape>', lambda x: self.top2.destroy())
+        else:
+            messagebox.showinfo("No Form Responses","Couldn't find any form responses to export.", parent=self.top)
 
     ## View a dynamically generated form to fill in
     def form_view(self, formid):
@@ -1811,11 +1933,35 @@ class App(tk.Tk):
         self.top.fcomment.grid(row = 0, column = 1, padx=(0,10), pady=(20,0))
         post_button = ttk.Button(finish_frame, text = "Post Form to Expect", command = lambda : self.post_form(formid))
         post_button.grid(row=0, column = 2, padx=(10,0), pady=(20,0))
+        post_button = ttk.Button(finish_frame, text = "Load Posted Expect Form", command = lambda : self.load_form(formid))
+        post_button.grid(row=0, column = 3, padx=(10,0), pady=(20,0))
 
         self.top.focus()
         self.top.wait_visibility()
         self.top.grab_set()
         self.top.bind('<Escape>', lambda x: self.top.destroy())
+
+    ## Load saved form from expect system if it exists
+    def load_form(self, formid):
+        c.execute("SELECT * FROM expect WHERE expect = ?", [formid])
+        ex_exists = c.fetchone()
+        if ex_exists:
+            form_resps = re.search("(F\![A-Z0-9]{3})\s+?([A-Z0-9]+)\s+?(.*?)(\#[A-Z0-9]+)",ex_exists[1])
+
+            if form_resps[2]:
+                # loop through form responses to set comboboxes
+                qnum=0
+                for resp in form_resps[2]:
+                    qnum+=1
+                    cnum=0
+                    for index in self.top.formcombos[qnum]["values"]:
+                        if index[0] == resp: self.top.formcombos[qnum].current(cnum)
+                        cnum+=1
+
+            if form_resps[3]!="":
+                self.top.fcomment.insert(0, form_resps[3])
+        else:
+            messagebox.showinfo("Form Not Found","A matching previously posted form was not found in the expect system.", parent=self.top)
 
     ## Process form to expect system
     def post_form(self, formid):
@@ -1847,7 +1993,7 @@ class App(tk.Tk):
         global forms
         self.form_refresh()
 
-        # Remove any entries that may exist in sub-menu
+        # remove any entries that may exist in sub-menu
         if self.formsmenu.winfo_exists():
             if self.formsmenu.index('end') is not None:
                 self.formsmenu.delete(0,self.formsmenu.index('end'))
@@ -1888,7 +2034,6 @@ class App(tk.Tk):
                     if form_line[0]=="@" and qindex>0:
                         if formdata[qindex]:
                             formdata[qindex].extend([{form_line[1]:form_line.partition(" ")[2]}])
-
         return formdata
 
     ## Send APRS SMS
@@ -2181,27 +2326,44 @@ class App(tk.Tk):
         if ma==68: t = h+":45-"+h+":59"
 
         if m != "" and d != "" and h !="" and t != "":
-            dcst = str(m+"/"+d+" "+t+" UTC")
+            dcst = str(m+"/"+d+" "+t)
 
         return dcst
 
-    ## return the current time as an encode short time string
+    ## Return the current time as an encode short time string
     def encode_shorttime(self):
         ecst=""
         m=chr(time.localtime(time.time())[1]+64)
         da=int(time.localtime(time.time())[2])
         if da<27: d=chr(da+64)
-        if da>27: d=chr(da+47)
+        if da>26: d=chr(da+47)
         h=chr(time.localtime(time.time())[3]+64)
         mi=chr(int(time.localtime(time.time())[4]/15)+1+64)
         ecst = "#"+m+d+h+mi
         return ecst
+
+    ## Update status bar in main window based on certain activities
+    def update_statusbar(self):
+        global totals
+
+        c.execute("SELECT count(*) FROM expect WHERE lm > DATETIME('now', '-5 second')")
+        totals[1]+=c.fetchone()[0]
+
+        c.execute("SELECT count(*) FROM forms WHERE lm > DATETIME('now', '-5 second')")
+        totals[2]+=c.fetchone()[0]
+
+        stupdate="Status: TCP Active "
+        if totals[1]>0: stupdate+="[EXPECT Updated] "
+        if totals[2]>0: stupdate+="[FORM RESPONSES Updated] "
+
+        self.statusbar.config(text=stupdate)
 
     ## Watch activity thread, update gui as needed
     def poll_activity(self):
         if event.is_set():
             self.refresh_activity_tree()
             self.refresh_keyword_tree()
+            self.update_statusbar()
             event.clear()
         super().after(2000,self.poll_activity)
 

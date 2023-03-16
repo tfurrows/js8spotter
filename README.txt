@@ -179,24 +179,27 @@ like JS8Call. MCForms allows you to maintain forms on both sides of the
 communiation, and send only the answers to form questions. Forms are .txt
 files located in the forms folder. Their format is as follows:
 
-* First line must be the human readable title of the form, then the pipe
-  symbol, and then the form ID. Like this example: Test Form|F!001
-* Blank lines are ignored
+* First line MUST be the human readable title of the form, then the pipe
+  symbol |, and then the form ID. Like this example: Test Form|F!001
 * A question line starts with a question mark and space, followed by
   the text of the question, as: ? What is your favorite color?
 * All answer lines that follow, up to the next question, will be associated.
 * Answer lines start with an at symbol and response character, a space, and
   then the text of the answer, as: @1 Red
 * A question may have up to 36 answers (A-Z an 0-9 are valid response chars)
+* Blank lines are ignored. Lines that start with anything other than ? or @
+  are also ignored.
+* It is recommended that comments start with #. The first line of the file
+  MUST be as described above, and not a comment.
 
 Details of the included forms formats will be posted on KF7MIX.com in the
-JS8Spotter section. Operators are encouraged to contact me to post any forms
+JS8Spotter section. Operators are encouraged to contact KF7MIX to post any forms
 they will be using on the air, so that those formats may be publicly available.
 
-For more form format details, view an example form in the forms folder.
+For more form format details, view the included forms in the forms folder.
 
-Forms are posted to the Expect system. When collected over the air, received
-form responses will be in the tools menu for viewing.
+Filled out forms are posted to the Expect system. When collected over the air,
+received form responses will be in the tools menu for viewing.
 
 ## APRS Commands
 

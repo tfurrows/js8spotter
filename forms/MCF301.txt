@@ -1,5 +1,7 @@
 Field Situation Report|F!301
 
+# Form updated 02/24/2023. This is a default JS8Spotter MCForms form. See kf7mix.com for details.
+
 ? Operator reporting for:
 @1 Reporting conditions for self in QTH location
 @2 Reporting conditions in immediate area, see comments

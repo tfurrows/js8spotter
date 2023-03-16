@@ -1,5 +1,7 @@
 Situation Report|F!300
 
+# Form updated 02/24/2023. This is a default JS8Spotter MCForms form. See kf7mix.com for details.
+
 ? Who is reporting?
 @1 Operator is self-reporting from QTH
 @2 Operator is reporting on behalf of own QTH unit leader, from QTH

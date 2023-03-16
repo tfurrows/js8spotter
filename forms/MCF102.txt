@@ -1,5 +1,7 @@
 JS8Call Operation Details|F!102
 
+# Form updated 02/24/2023. This is a default JS8Spotter MCForms form. See kf7mix.com for details.
+
 ? Experience level / comfort with JS8Call:
 @1 Little or no experience
 @2 Some experience

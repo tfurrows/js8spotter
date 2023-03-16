@@ -1,5 +1,7 @@
 Hospital Bed Report|F!302
 
+# Form updated 02/24/2023. This is a default JS8Spotter MCForms form. See kf7mix.com for details.
+
 ? Reporting for which hospital?
 @1 Closest to operator QTH
 @2 Specific hospital, see comments

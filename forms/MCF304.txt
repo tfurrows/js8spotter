@@ -1,5 +1,7 @@
 Individual Situation Report|F!304
 
+# Form updated 02/24/2023. This is a default JS8Spotter MCForms form. See kf7mix.com for details.
+
 ? Phone landline functioning?
 @1 Yes, fully functional
 @2 Partially functional
