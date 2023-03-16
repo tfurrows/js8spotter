@@ -1,4 +1,4 @@
-# JS8Spotter v0.99b.  Special thanks to KE0DHO, KF0HHR, N0GES, N6CYB, KQ4DRG, and N4FWD for help with development and testing.
+# JS8Spotter v1.01b.  Special thanks to KE0DHO, KF0HHR, N0GES, N6CYB, KQ4DRG, and N4FWD for help with development and testing.
 #
 # A small JS8Call API-based app to keep track of activity containing specific search terms, including callsigns or other activity. Matches on RX.ACTIVITY,
 # RX.DIRECTED, and RX.SPOT only. Tested under Windows with JS8Call v2.2.0, and in Linux with JS8Call v2.2.1-devel.
@@ -38,7 +38,7 @@ import re
 ### Globals
 swname = "JS8Spotter"
 fromtext = "de KF7MIX"
-swversion = "0.99b"
+swversion = "1.01b"
 
 dbfile = 'js8spotter.db'
 conn = sqlite3.connect(dbfile)
@@ -266,7 +266,8 @@ class App(tk.Tk):
     def create_gui(self):
         self.title(swname+" "+fromtext+" (v"+swversion+")")
         self.geometry('900x400')
-        self.resizable(width=False, height=False)
+        self.resizable(width=True, height=True)
+        self.minsize(900,400)
 
         self.columnconfigure(0, weight=12)
         self.columnconfigure(1, weight=1)
@@ -276,7 +277,7 @@ class App(tk.Tk):
         self.rowconfigure(0,weight=1)
         self.rowconfigure(1,weight=1)
         self.rowconfigure(2,weight=24)
-        self.rowconfigure(3,weight=6)
+        self.rowconfigure(3,weight=1)
 
         # menus
         self.menubar = Menu(self)
@@ -300,6 +301,10 @@ class App(tk.Tk):
         self.toolsmenu = Menu(self.menubar, tearoff = 0)
         self.toolsmenu.add_command(label = 'Map', command = self.grid_map)
         self.toolsmenu.add_command(label = 'Expect', command = self.expect)
+        self.toolsmenu.add_separator()
+        self.toolsmenu.add_command(label = 'APRS SMS Text', command = self.aprs_sms)
+        self.toolsmenu.add_command(label = 'APRS Email', command = self.aprs_email)
+        self.toolsmenu.add_command(label = 'APRS Report Grid', command = self.aprs_grid)
 
         self.helpmenu = Menu(self.menubar, tearoff = 0)
         self.helpmenu.add_command(label = 'Quick Help', command = self.showhelp)
@@ -1513,6 +1518,152 @@ class App(tk.Tk):
             conn.commit()
             current_profile_id = 0
             self.build_profilemenu()
+
+
+    # Send APRS SMS
+    def aprs_sms(self):
+        self.top = Toplevel(self)
+        self.top.title("APRS: Send SMS Text")
+        self.top.resizable(width=False, height=False)
+
+        label_new = ttk.Label(self.top, text = "Phone Number")
+        label_new.grid(row = 0, column = 0, padx=(10,0), pady=(20,0))
+        self.sms_phone = ttk.Entry(self.top, width='34')
+        self.sms_phone.grid(row = 0, column = 1, padx=(0,10), pady=(20,0))
+        self.sms_phone.bind("<KeyRelease>", lambda x: self.update_aprssms())
+
+        label_new = ttk.Label(self.top, text = "Message (32 char)")
+        label_new.grid(row = 1, column = 0, padx=(10,0), pady=(10,0))
+        self.sms_msg = ttk.Entry(self.top, width='34')
+        self.sms_msg.grid(row = 1, column = 1, padx=(0,10), pady=(10,0))
+        self.sms_msg.bind("<KeyRelease>", lambda x: self.update_aprssms())
+
+        self.sms_cmd = ttk.Entry(self.top)
+        self.sms_cmd.grid(row = 2, column = 0, columnspan=2, stick='nsew', padx=(10,10), pady=(20,0))
+
+        cbframe = ttk.Frame(self.top)
+        cbframe.grid(row=3, columnspan=2, sticky='e', padx=10)
+
+        #create_button = ttk.Button(cbframe, text = "Generate", command = self.proc_aprssms)
+        #create_button.grid(row=0, column = 0, padx=(20,0), pady=(20,20))
+        create_button = ttk.Button(cbframe, text = "Send", command = self.proc_aprscmd)
+        create_button.grid(row=0, column = 1, padx=(10,0), pady=(20,20))
+        cancel_button = ttk.Button(cbframe, text = "Cancel", command = self.top.destroy)
+        cancel_button.grid(row=0, column = 2, padx=(10,0), pady=(20,20))
+
+        self.top.wait_visibility()
+        self.top.grab_set()
+        self.sms_phone.focus()
+        self.top.bind('<Escape>', lambda x: self.top.destroy())
+
+
+    # update generated aprs cmd string on keypress
+    def update_aprssms(self):
+        phone = self.sms_phone.get().strip()
+        msg = self.sms_msg.get().strip()
+        if phone=="" or msg=="": return
+        aprs_cmd = "@APRSIS CMD :SMSGTE   :@"+phone+" "+msg+"{01}"
+        self.sms_cmd.delete(0,END)
+        self.sms_cmd.insert(0,aprs_cmd)
+
+
+    # Send APRS email
+    def aprs_email(self):
+        self.top = Toplevel(self)
+        self.top.title("APRS: Send Email")
+        self.top.resizable(width=False, height=False)
+
+        label_new = ttk.Label(self.top, text = "Email")
+        label_new.grid(row = 0, column = 0, padx=(10,0), pady=(20,0))
+        self.sms_email = ttk.Entry(self.top, width='34')
+        self.sms_email.grid(row = 0, column = 1, padx=(0,10), pady=(20,0))
+        self.sms_email.bind("<KeyRelease>", lambda x: self.update_aprsemail())
+
+        label_new = ttk.Label(self.top, text = "Message")
+        label_new.grid(row = 1, column = 0, padx=(10,0), pady=(10,0))
+        self.sms_msg = ttk.Entry(self.top, width='34')
+        self.sms_msg.grid(row = 1, column = 1, padx=(0,10), pady=(10,0))
+        self.sms_msg.bind("<KeyRelease>", lambda x: self.update_aprsemail())
+
+        self.sms_cmd = ttk.Entry(self.top)
+        self.sms_cmd.grid(row = 2, column = 0, columnspan=2, stick='nsew', padx=(10,10), pady=(20,0))
+
+        cbframe = ttk.Frame(self.top)
+        cbframe.grid(row=3, columnspan=2, sticky='e', padx=10)
+
+        #create_button = ttk.Button(cbframe, text = "Generate", command = self.proc_aprssms)
+        #create_button.grid(row=0, column = 0, padx=(20,0), pady=(20,20))
+        create_button = ttk.Button(cbframe, text = "Send", command = self.proc_aprscmd)
+        create_button.grid(row=0, column = 1, padx=(10,0), pady=(20,20))
+        cancel_button = ttk.Button(cbframe, text = "Cancel", command = self.top.destroy)
+        cancel_button.grid(row=0, column = 2, padx=(10,0), pady=(20,20))
+
+        self.top.wait_visibility()
+        self.top.grab_set()
+        self.sms_email.focus()
+        self.top.bind('<Escape>', lambda x: self.top.destroy())
+
+
+    # update generated aprs cmd string on keypress
+    def update_aprsemail(self):
+        email = self.sms_email.get().strip()
+        msg = self.sms_msg.get().strip()
+        if email=="" or msg=="": return
+        aprs_cmd = "@APRSIS CMD :EMAIL-2  :"+email+" "+msg+"{01}"
+        self.sms_cmd.delete(0,END)
+        self.sms_cmd.insert(0,aprs_cmd)
+
+
+    # Send APRS email
+    def aprs_grid(self):
+        self.top = Toplevel(self)
+        self.top.title("APRS: Report Grid Location")
+        self.top.resizable(width=False, height=False)
+
+        label_new = ttk.Label(self.top, text = "Grid Location")
+        label_new.grid(row = 0, column = 0, padx=(10,0), pady=(20,0))
+        self.aprs_grid = ttk.Entry(self.top, width='34')
+        self.aprs_grid.grid(row = 0, column = 1, padx=(0,10), pady=(20,0))
+        self.aprs_grid.bind("<KeyRelease>", lambda x: self.update_aprsgrid())
+        self.aprs_grid.insert(0,settings['grid'])
+
+        self.sms_cmd = ttk.Entry(self.top)
+        self.sms_cmd.grid(row = 2, column = 0, columnspan=2, stick='nsew', padx=(10,10), pady=(20,0))
+
+        cbframe = ttk.Frame(self.top)
+        cbframe.grid(row=3, columnspan=2, sticky='e', padx=10)
+
+        #create_button = ttk.Button(cbframe, text = "Generate", command = self.proc_aprssms)
+        #create_button.grid(row=0, column = 0, padx=(20,0), pady=(20,20))
+        create_button = ttk.Button(cbframe, text = "Send", command = self.proc_aprscmd)
+        create_button.grid(row=0, column = 1, padx=(10,0), pady=(20,20))
+        cancel_button = ttk.Button(cbframe, text = "Cancel", command = self.top.destroy)
+        cancel_button.grid(row=0, column = 2, padx=(10,0), pady=(20,20))
+
+        self.update_aprsgrid()
+        self.top.wait_visibility()
+        self.top.grab_set()
+        self.aprs_grid.focus()
+        self.top.bind('<Escape>', lambda x: self.top.destroy())
+
+
+    # update generated aprs cmd string on keypress
+    def update_aprsgrid(self):
+        grid = self.aprs_grid.get().strip()
+        if grid=="": return
+        aprs_cmd = "@APRSIS GRID "+grid
+        self.sms_cmd.delete(0,END)
+        self.sms_cmd.insert(0,aprs_cmd)
+
+
+    # Process (send/tx) aprs cmd
+    def proc_aprscmd(self):
+        new_cmd = self.sms_cmd.get()
+        if new_cmd == "": return
+        tx_content = json.dumps({"params":{},"type":"TX.SEND_MESSAGE","value":new_cmd})
+        self.sock.send(bytes(tx_content + '\n','utf-8'))
+        self.top.destroy()
+
 
 
     # Edit personal settings

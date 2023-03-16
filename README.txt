@@ -23,6 +23,9 @@ following three checkmarks:
 If you change port or IP from the default, TCP address and port settings for
 JS8Spotter may be modified in the application file menu.
 
+Make sure to set your callsign and grid in the application file menu when
+running the software for the first time.
+
 
 # Usage
 
@@ -158,6 +161,21 @@ retained when the program is closed.
 
 Provides a simple offline maidenhead grid map of the latest 100 contacts.
 
+## Expect Window
+
+The Expect subsystem allows you to specific text that your station "expects" to
+see, along with a response that your station will send automatically if the
+expected text is found. All expect commands are prefixed with "E?". You may
+specify which stations or groups may trigger a response, and you may specify
+how many times your station will respond to a single expect.
+
+See the in-program help for more details.
+
+## APRS Commands
+
+JS8Call supports APRSIS gateway commands. The APRS options in the Tools menu
+help you format these commands for easy and quick use. Use them for sending
+an SMS text, an email, or reporting your grid location.
 
 # Support
 

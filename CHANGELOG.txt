@@ -3,6 +3,8 @@
 
 # Change Log (latest first)
 
+2023-01-26    v1.01b    Added APRS commands to tools menu. Enabled ability to
+                        resize the main window
 2023-01-22    v0.99b    Cleaned up some bugs in the expect system, and
                         some Windows-specific bugs in the maps and other areas
 2022-12-19    v0.97b    Added TCP settings and network check

@@ -50,3 +50,12 @@ JS8Spotter Quick Help
     * Use the <Delete> key to remove entries from the list
     * Right-click to edit an entry
     * Double-click to view details of an entry
+
+## APRS Commands
+
+    The built-in APRS commands will format the proper JS8Call string to transmit
+    an APRS command to a listening station. With these you may:
+
+    * Send an SMS text message (maximum of 32 characters)
+    * Send an email
+    * Report your grid location to the APRS network
