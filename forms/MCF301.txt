@@ -1,0 +1,58 @@
+Field Situation Report|F!301
+
+? Operator reporting for:
+@1 Reporting conditions for self in QTH location
+@2 Reporting conditions in immediate area, see comments
+@3 Reporting conditions in town/city, see comments
+@4 Reporting conditions in region, see comments
+
+? Phone landlines functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Cell phone functioning?
+@1 Yes, calls and texts fully functional
+@2 Partially functional, calls only
+@3 Partially functional, texts only
+@4 No
+@5 Unknown
+
+? Local AM/FM/TV stations broadcasting?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Internet functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Public water works functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Commercial power functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Natural gas supply functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? NOAA Weather Radio functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+

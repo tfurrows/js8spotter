@@ -3,6 +3,20 @@
 
 # Change Log (latest first)
 
+2023-02-14    v1.02b    Fixed scrollbar display issues
+                        Fixed row coloring issues
+                        Fixed bug when search string was a number
+                        Fixed error when right-clicking inside export dialogs with nothing selected
+                        Corrected some window size issues, made more windows resizeable
+                        Re-arranged map lookup tables to match actual map layout
+                        Added manual send to expect
+                        Modified * handling in expect to allow groups+* as from
+                        Cleaned up code & comments a bit, reorganized many functions
+                        Cleaned up some methods around focus() for a little more consistency
+                        Added datetime to expect sent record
+                        Preserve expect sent record when updating expect entry
+                        Changed expect view to scrollable window
+                        Added MCForms subsystem (multiple choice forms) - Includes new database table
 2023-01-26    v1.01b    Added APRS commands to tools menu. Enabled ability to
                         resize the main window
 2023-01-22    v0.99b    Cleaned up some bugs in the expect system, and

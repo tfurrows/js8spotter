@@ -1,0 +1,90 @@
+Amateur Operator Information|F!100
+
+? GMT Offset:
+@1 -12:00
+@2 -11:00
+@3 -10:00
+@4 -09:00
+@5 -08:00
+@6 -07:00
+@7 -06:00
+@8 -05:00
+@9 -04:00
+@0 -03:00
+@A -02:00
+@B -01:00
+@C +00:00
+@D +01:00
+@E +02:00
+@F +03:00
+@G +04:00
+@H +05:00
+@I +06:00
+@J +07:00
+@K +08:00
+@L +09:00
+@M +10:00
+@N +11:00
+@O +12:00
+
+? License level (closest match if international):
+@1 Technician
+@2 General
+@3 Extra
+
+? Years operating radio:
+@1 0-5 years
+@2 5-10 years
+@3 10-20 years
+@4 20+ years
+
+? Comfort level voice:
+@1 Uncomfortable with all aspects
+@2 Not very comfortable
+@3 Somewhat comfortable
+@4 Very comfortable
+@5 Perfectly comfortable with all aspects
+
+? Comfort level digital:
+@1 Uncomfortable with all aspects
+@2 Not very comfortable
+@3 Somewhat comfortable
+@4 Very comfortable
+@5 Perfectly comfortable with all aspects
+
+? Comfort level electronics & homebrew:
+@1 Uncomfortable with all aspects
+@2 Not very comfortable
+@3 Somewhat comfortable
+@4 Very comfortable
+@5 Perfectly comfortable with all aspects
+
+? Interest in ragchew:
+@1 Not interested
+@2 Somewhat interested
+@3 Very interested
+
+? Interest in contesting:
+@1 Not interested
+@2 Somewhat interested
+@3 Very interested
+
+? Interest in emergency communication:
+@1 Not interested
+@2 Somewhat interested
+@3 Very interested
+
+? Local time of day most likely to be on the air:
+@1 00:00-02:00
+@2 02:00-04:00
+@3 04:00-06:00
+@4 06:00-08:00
+@5 08:00-10:00
+@6 10:00-12:00
+@7 12:00-14:00
+@8 14:00-16:00
+@9 16:00-18:00
+@0 18:00-20:00
+@A 20:00-22:00
+@B 22:00-00:00
+

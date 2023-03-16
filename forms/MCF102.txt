@@ -1,0 +1,46 @@
+JS8Call Operation Details|F!102
+
+? Experience level / comfort with JS8Call:
+@1 Little or no experience
+@2 Some experience
+@3 Fair amount of experience, comfortable with some help
+@4 Experienced, comfortable with no help
+@5 Highly experienced, able to help others
+
+? Experience level / comfort with other digital modes:
+@1 Little or no experience
+@2 Some experience
+@3 Fair amount of experience, comfortable with some help
+@4 Experienced, comfortable with no help
+@5 Highly experienced, able to help others
+
+? Station activity level on JS8Call (attended or unattended):
+@1 Station attempts to operate 24/7
+@2 Station operates daily on a schedule
+@3 Station operates daily as available
+@4 Station operates weekly
+@5 Station operates only incidentially
+
+? Your most active band for JS8Call:
+@1 160m / 1.842 MHz
+@2 80m / 3.578 MHz
+@3 40m / 7.078 MHz
+@4 30m / 10.130 MHz
+@5 20m / 14.078 MHz
+@6 17m / 18.104 MHz
+@7 15m / 21.078 MHz
+@8 12m / 24.922 MHz
+@9 10m / 28.078 MHz
+@0 6m / 50.318 MHz
+@A 2m / 144.178 MHz
+
+? Do you participate in the heartbeat network?
+@1 When my station is operating I generally participate in the heartbeat network
+@2 I sometimes participate in the Heartbeat network
+@3 I rarely participate in the heartbeat network
+@4 I never participate in the heartbeat network
+
+? Are you comfortable with allowing other stations to use your system for relays and message store?
+@1 Yes
+@2 No
+

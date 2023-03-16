@@ -1,0 +1,97 @@
+Amateur Station & Equipment Details|F!101
+
+? Station max RF power capability:
+@1 QRP 0-5W
+@2 5-10W
+@3 10-50W
+@4 100W
+@5 300-500W amplified
+@6 Over 500W amplified
+@7 Legal limit amplified
+
+? Primary antenna (antenna with longest range and most reliable operation):
+@1 Mobile antenna, rubber duck, or jpole
+@2 Ground plane
+@3 Yagi
+@4 Log Periodic
+@5 Center-Fed Dipole
+@6 Off-Center Fed Dipole
+@7 Trap Dipole
+@8 Fan Dipole
+@9 Parallel Dipole
+@0 End Fed Half Wave
+@A Wire Doublet
+@B Compromise Vertical
+@C Magnetic Loop
+@D Random Wire
+@E Other
+
+? Primary antenna height (at highest point):
+@1 Ground - 10ft
+@2 10ft - 20ft off the ground
+@3 20ft - 50ft off the ground
+@4 50ft - 100ft off the ground
+@5 Over 100ft off the ground
+
+? Primary antenna location information (at highest point):
+@1 Ground or near ground level
+@2 Roof peak or near roof peak level
+@3 In the trees
+@4 On a mast mounted on the ground
+@5 On a mast mounted or secured on a roof or other high point
+@6 On a tower
+@7 Mobile or vehicle mounted
+@8 Portable or temporary mount
+@9 Stealth or HOA
+
+? Additional antennas:
+@1 Yes, additional antennas in use, no backups
+@2 Yes, additional antennas in use, as well as backups
+@3 Yes, backup antennas
+@4 No additional antennas in use or as backup
+
+? Primary radio brand:
+@1 Alinco
+@2 Baofeng
+@3 Elecraft
+@4 FlexRadio
+@5 ICOM
+@6 Kenwood
+@7 TenTec
+@8 TYT
+@9 Wouxun
+@0 Xiegu
+@A Yaesu
+@B Other / Not Listed
+
+? Bands and modes actively operated at primary station:
+@1 All bands, all modes, operational in CW
+@2 All bands, all modes, no CW without PC
+@3 HF, all modes, operational in CW
+@4 HF, all modes, no CW without PC
+@5 HF SSB, operational in CW
+@6 HF SSB, no CW without PC
+@7 VHF and or UHF, FM
+
+? Digital modes configured (select the best match to your setup):
+@1 JS8Call, all modes supported by either FLDigi or HRD, Winlink, FT8, VARA
+@2 JS8Call, all modes supported by either FLDigi or HRD, Winlink, FT8
+@3 JS8Call, all modes supported by either FLDigi or HRD, Winlink, VARA
+@4 JS8Call, all modes supported by either FLDigi or HRD, VARA
+@5 JS8Call, all modes supported by either FLDigi or HRD, FT8
+@6 JS8Call, all modes supported by either FLDigi or HRD, Winlink
+@7 JS8Call, Winlink, VARA, FT8
+@8 JS8Call, Winlink, VARA
+@9 JS8Call, Winlink, FT8
+@0 JS8Call, VARA
+@A JS8Call, FT8
+
+? Grid down capabilities:
+@1 Battery capacity for at least 24hrs of continuous low-duty-cycle operating time, solar charging available
+@2 Battery capacity for at least 48hrs of continuous low-duty-cycle operating time, solar charging available
+@3 Battery capacity for at least 72hrs of continuous low-duty-cycle operating time, solar charging available
+@4 Battery capacity for at least 24hrs of continuous low-duty-cycle operating time, no off-grid charging ability
+@5 Battery capacity for at least 48hrs of continuous low-duty-cycle operating time, no off-grid charging ability
+@6 Battery capacity for at least 72hrs of continuous low-duty-cycle operating time, no off-grid charging ability
+@7 Limited (0-23hrs) or no battery capacity
+

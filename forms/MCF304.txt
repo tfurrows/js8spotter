@@ -1,0 +1,55 @@
+Individual Situation Report|F!304
+
+? Phone landline functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Cell phone functioning?
+@1 Yes, calls and texts fully functional
+@2 Partially functional, calls only
+@3 Partially functional, texts only
+@4 No
+@5 Unknown
+
+? Local AM/FM/TV stations broadcasting?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Internet functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Public water works functioning?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+? Commercial or backup power functioning?
+@1 Yes, fully functional
+@2 Partially functional, commercial only
+@2 Partially functional, commercial and backup available
+@2 Partially functional, backup only
+@3 No
+@4 Unknown
+
+? Natural gas or propane functioning?
+@1 Yes, fully functional
+@2 Partially functional, municipal natural gas
+@2 Partially functional, individual propane
+@3 No
+@4 Unknown
+
+? NOAA Weather Radio broadcasting?
+@1 Yes, fully functional
+@2 Partially functional
+@3 No
+@4 Unknown
+
+

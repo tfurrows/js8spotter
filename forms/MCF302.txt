@@ -1,0 +1,69 @@
+Hospital Bed Report|F!302
+
+? Reporting for which hospital?
+@1 Closest to operator QTH
+@2 Specific hospital, see comments
+
+? Available Beds:
+@0 No available beds
+@1 1-5 available beds
+@2 5-10 available beds
+@3 10-15 available beds
+@4 15-20 available beds
+@5 20-30 available beds
+@6 30+ available beds
+
+? Emergency Beds:
+@0 No available beds
+@1 1-5 available beds
+@2 5-10 available beds
+@3 10-15 available beds
+@4 15-20 available beds
+@5 20-30 available beds
+@6 30+ available beds
+
+? Pediatrics:
+@0 No available beds
+@1 1-5 available beds
+@2 5-10 available beds
+@3 10-15 available beds
+@4 15-20 available beds
+@5 20-30 available beds
+@6 30+ available beds
+
+? Medical/Surgery:
+@0 No available beds
+@1 1-5 available beds
+@2 5-10 available beds
+@3 10-15 available beds
+@4 15-20 available beds
+@5 20-30 available beds
+@6 30+ available beds
+
+? Psychiatry:
+@0 No available beds
+@1 1-5 available beds
+@2 5-10 available beds
+@3 10-15 available beds
+@4 15-20 available beds
+@5 20-30 available beds
+@6 30+ available beds
+
+? Burn:
+@0 No available beds
+@1 1-5 available beds
+@2 5-10 available beds
+@3 10-15 available beds
+@4 15-20 available beds
+@5 20-30 available beds
+@6 30+ available beds
+
+? Critical Care:
+@0 No available beds
+@1 1-5 available beds
+@2 5-10 available beds
+@3 10-15 available beds
+@4 15-20 available beds
+@5 20-30 available beds
+@6 30+ available beds
+

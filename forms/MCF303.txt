@@ -1,0 +1,79 @@
+Hospital Status Report|F!303
+
+? Reporting for which hospital?
+@1 Closest to operator QTH
+@2 Specific hospital, see comments
+
+? Overall ability to provide essential care services:
+@1 Normal
+@2 Modified partially functional - no assistance needed
+@3 Limited partially functional- Some assistance needed
+@4 Impaired - major assistance needed
+@5 Not functional - major assistance needed
+@6 Status unknown
+
+? Hospital COMMUNICATION: Internet?
+@1 Yes
+@2 No
+@3 Partial or intermittent
+@4 Unknown
+
+? Hospital COMMUNICATION: Landline Phone and/or Cell/Text?
+@1 Yes, landline and cell/text
+@2 Yes landline, no cell/text
+@3 Yes cell/text, no landline
+@4 Yes text, no cell phone or landline
+@5 Partial or intermittent landline, no cell
+@6 Partial or intermittent cell/text service, no landline
+@7 Partial or intermittent landline, cell and text
+@8 Unknown
+
+? Hospital COMMUNICATION: Amateur Radio and/or Satellite Phone?
+@1 Yes, amateur radio and satellite phone
+@2 Yes amateur radio, no satellite phone
+@3 Yes satellite phone, no amateur radio
+@4 Partial or intermittent amateur radio and satellite phone
+@5 Partial or intermittent amateur radio, no satellite phone
+@6 Partial or intermittent satellite phone, no amateur radio
+@7 Unknown
+
+? Hospital UTILITIES: Power?
+@1 Yes full, municipal source
+@2 Yes full, generators
+@3 Partial power, generators
+@2 No power
+@3 Unknown
+
+? Hospital UTILITIES: Water?
+@1 Yes full, municipal source
+@2 Yes full, reserves
+@3 Partial water, reserves
+@2 No water
+@3 Unknown
+
+? Hospital UTILITIES: HVAC?
+@1 Fully operational
+@2 Patial operation
+@2 None
+@3 Unknown
+
+? Evacuations (select highest accurate level)?
+@1 None currently planned
+@2 Partial evacuation planned
+@3 Partial evacuation in process
+@4 Partial evacuation completed
+@5 Full evacuation planned
+@6 Full evacuation in process
+@7 Full evacuation completed
+@8 Sheltering in place
+@9 Unknown
+
+? Casualties and/or injuries?
+@1 No injuries, no deaths
+@2 Minor injuries, no deaths
+@3 Significant injuries, no deaths
+@4 Significant injuries, 0-3 deaths
+@5 Major injuries, 0-5 deaths
+@6 Heavy injuries, probable or confirmed deaths
+@7 Many heavy injuries, confirmed deaths
+

@@ -1,4 +1,4 @@
-# JS8Spotter utility to migrate 95b/96b/97b database to 0.98b format
+# JS8Spotter utility to migrate from 94b-1.01b database to 1.02b format (adding maps, expect, and forms as needed)
 #
 # MIT License, Copyright 2023 Joseph D Lyman KF7MIX
 #
@@ -18,8 +18,19 @@ import sqlite3
 conn = sqlite3.connect('js8spotter.db')
 c = conn.cursor()
 
-# create the missing table
-c.execute("""CREATE TABLE "expect" (
+# create the missing tables
+c.execute("""CREATE TABLE IF NOT EXISTS grid (
+    grid_callsign VARCHAR (64) UNIQUE ON CONFLICT REPLACE PRIMARY KEY,
+    grid_grid VARCHAR (16),
+    grid_dial VARCHAR (64),
+    grid_type VARCHAR (64),
+    grid_snr VARCHAR (16),
+    grid_timestamp TIMESTAMP
+)
+""")
+
+
+c.execute("""CREATE TABLE IF NOT EXISTS "expect" (
 	"expect"	VARCHAR(6) UNIQUE ON CONFLICT REPLACE,
 	"reply"	    TEXT,
 	"allowed"	TEXT,
@@ -27,6 +38,19 @@ c.execute("""CREATE TABLE "expect" (
 	"txmax"	INTEGER,
 	"lm"	TIMESTAMP,
 	PRIMARY KEY("expect")
+)
+""")
+
+c.execute("""CREATE TABLE IF NOT EXISTS "forms" (
+	"id"	INTEGER UNIQUE,
+	"fromcall"	TEXT,
+	"tocall"	TEXT,
+	"typeid"	TEXT,
+	"responses"	TEXT,
+	"msgtxt"	TEXT,
+	"timesig"	TEXT,
+	"lm"	TIMESTAMP,
+	PRIMARY KEY("id" AUTOINCREMENT)
 )
 """)
 
