@@ -32,14 +32,28 @@ import sqlite3
 import re
 import os
 import requests
+import shutil
 
 ### Globals
 swname = "JS8Spotter"
 fromtext = "de KF7MIX"
 swversion = "1.05b"
 
+# Check if a database file already exists. If it does, use it, if it doesn't
+# Copy a blank database to the user's database location
+user_home_path = os.path.expanduser('~')
+database_path = os.path.join(user_home_path,".js8spotter")
+ifDatabasePathExist = os.path.exists(database_path)
+if not ifDatabasePathExist:
+    os.makedirs(database_path)
+
 dbfile = 'js8spotter.db'
-conn = sqlite3.connect(dbfile)
+
+ifDatabaseExist = os.path.exists(os.path.join(database_path,dbfile))
+if not ifDatabaseExist:
+    shutil.copyfile("js8spotter.blank.db",os.path.join(database_path,dbfile))
+
+conn = sqlite3.connect(os.path.join(database_path,dbfile))
 c = conn.cursor()
 
 current_profile_id = 0
