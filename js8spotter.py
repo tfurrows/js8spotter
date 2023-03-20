@@ -39,22 +39,14 @@ swname = "JS8Spotter"
 fromtext = "de KF7MIX"
 swversion = "1.05b"
 
-# Check if a database file already exists. If it does, use it, if it doesn't
-# Copy a blank database to the user's database location
+# Find the path to the users Home folder
 user_home_path = os.path.expanduser('~')
+
+# Set the path to where the database is to be stored
 database_path = os.path.join(user_home_path,".js8spotter")
-ifDatabasePathExist = os.path.exists(database_path)
-if not ifDatabasePathExist:
-    os.makedirs(database_path)
 
+# Set the name of the database file
 dbfile = 'js8spotter.db'
-
-ifDatabaseExist = os.path.exists(os.path.join(database_path,dbfile))
-if not ifDatabaseExist:
-    shutil.copyfile("js8spotter.blank.db",os.path.join(database_path,dbfile))
-
-conn = sqlite3.connect(os.path.join(database_path,dbfile))
-c = conn.cursor()
 
 current_profile_id = 0
 search_strings = []
@@ -83,6 +75,20 @@ gridmultiplier = [
 markeropts = ["Latest 100", "Latest 50", "Latest 25", "Latest 10"]
 
 ### Database work
+
+# Check if a database file already exists. If it does, use it
+# If it doesn't exist, copy a blank database to the user's 
+# database location
+ifDatabasePathExist = os.path.exists(database_path)
+if not ifDatabasePathExist:
+    os.makedirs(database_path)
+
+ifDatabaseExist = os.path.exists(os.path.join(database_path,dbfile))
+    if not ifDatabaseExist:
+        shutil.copyfile("js8spotter.blank.db",os.path.join(database_path,dbfile))
+    
+    conn = sqlite3.connect(os.path.join(database_path,dbfile))
+    c = conn.cursor()
 
 ## Clean-up tables
 
@@ -143,9 +149,9 @@ class TCP_RX(Thread):
         self.keep_running = False
 
     def run(self):
-        conn1 = sqlite3.connect(dbfile) # we need our own db connection in this thread
+        conn1 = sqlite3.connect(os.path.join(database_path,dbfile)) # we need our own db connection in this thread
         c1 = conn1.cursor()
-
+        
         track_types = {"RX.ACTIVITY", "RX.DIRECTED", "RX.SPOT"}
 
         while self.keep_running:
