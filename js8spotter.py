@@ -84,11 +84,11 @@ if not ifDatabasePathExist:
     os.makedirs(database_path)
 
 ifDatabaseExist = os.path.exists(os.path.join(database_path,dbfile))
-    if not ifDatabaseExist:
-        shutil.copyfile("js8spotter.blank.db",os.path.join(database_path,dbfile))
+if not ifDatabaseExist:
+    shutil.copyfile("js8spotter.blank.db",os.path.join(database_path,dbfile))
     
-    conn = sqlite3.connect(os.path.join(database_path,dbfile))
-    c = conn.cursor()
+conn = sqlite3.connect(os.path.join(database_path,dbfile))
+c = conn.cursor()
 
 ## Clean-up tables
 
