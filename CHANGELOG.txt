@@ -3,6 +3,13 @@
 
 # Change Log (latest first)
 
+2023-03-24    v1.05b    Fixed bug with spaces in expect allowed list
+                        Renamed the "allowed" input in Expect to match the list view name
+                        Adjusted frame/grid to help with text cutoff on some systems
+                        Added warning on startup if callsign or grid aren't set
+                        Added lines to prevent expect from sending when callsign isn't set
+                        Added manual
+                        Setup github release (thanks to Dan KI6ESH!)
 2023-03-07    v1.04b    Fixed bug in export saveas function
                         Added missing comments to report output
                         Added ability to hide RX.SPOT in view menu
